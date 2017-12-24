@@ -1,5 +1,5 @@
 %%
-clear, clc, close all;
+clc, close all;
 %%
 param.motionModel           = 'ConstantAcceleration';
 param.initialLocation       = 'Same as first detection';
@@ -11,7 +11,7 @@ param.segmentationThreshold = 0.05;
 %%
 NumTrainingFrames = 10;
 
-utilities.videoReader = vision.VideoFileReader('skinMask.mp4');
+utilities.videoReader = vision.VideoFileReader('video.mp4');
 utilities.videoPlayer = vision.VideoPlayer('Position', [890,600,800,600]);
 utilities.foregroundDetector = vision.ForegroundDetector('NumTrainingFrames', 10, 'InitialVariance','Auto');
 utilities.blobAnalyzer = vision.BlobAnalysis('AreaOutputPort', false, 'MinimumBlobArea', 70, 'CentroidOutputPort', true);
@@ -20,18 +20,22 @@ utilities.accumulatedDetections = zeros(0, 2);
 utilities.accumulatedTrackings  = zeros(0, 2);
 
 %%
-for i = 1:NumTrainingFrames
-    objectFrame = step(utilities.videoReader);
-    step(utilities.videoPlayer,objectFrame);
-end
-    
-objectFrame = step(utilities.videoReader);
-objectMask  = step(utilities.foregroundDetector, objectFrame);
-points = detectMinEigenFeatures(rgb2gray(objectFrame).*objectMask);
-pointImage = insertMarker(objectFrame,points.Location,'+','Color','white');
+foreground = vision.VideoFileReader('mask.mp4');
 
 %%
-tracker = vision.PointTracker('MaxBidirectionalError',1);
+for i = 1:NumTrainingFrames
+    objectFrame = step(utilities.videoReader);
+    objectMask  = step(foreground);
+end
+
+%%
+objectMask2 = extractHand(objectMask(:,:,1));
+points = detectFASTFeatures(rgb2gray(objectFrame).*objectMask2);
+pointImage = insertMarker(objectFrame,points.Location,'+','Color','white');
+imagesc(pointImage), axis image;
+
+%%
+tracker = vision.PointTracker('NumPyramidLevels',1);
 initialize(tracker,points.Location,objectFrame);
 
 % figure;
@@ -40,16 +44,17 @@ initialize(tracker,points.Location,objectFrame);
 
 %%
 while ~isDone(utilities.videoReader)
-      frame = step(utilities.videoReader);
-      mask  = step(utilities.foregroundDetector,frame);
-      [points, validity] = step(tracker,frame);
-      out = insertMarker(frame,points(validity, :),'+');
-      if any(mask(:))
-          step(utilities.videoPlayer,out.*mask);
-      else
-          step(utilities.videoPlayer,out);
-      end
-%       imagesc(mask);
+    frame = step(utilities.videoReader);
+    objectMask  = step(foreground);
+    [points, validity] = step(tracker,frame);
+    out = insertMarker(frame,points(validity, :),'+');
+    step(utilities.videoPlayer,out);
 end
 
+%%
+
 utilities.videoReader.release;
+foreground.release;
+
+utilities.videoPlayer.delete;
+foreground.delete;
