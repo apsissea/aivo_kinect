@@ -1,4 +1,4 @@
-<<<<<<< HEAD
+
 %%
 if exist('video','var') == 0
     fprintf('Loading video ...')
@@ -46,7 +46,7 @@ implay(maskedImage,30);
 if isfile('skinMask.mp4')==0
     videoWrite(maskedImage,'skinMask');
 end
-=======
+
 %%
 if exist('video','var') == 0
     fprintf('Loading video ...')
@@ -94,4 +94,3 @@ implay(maskedImage,30);
 if isfile('skinMask.mp4')==0
     videoWrite(maskedImage,'skinMask');
 end
->>>>>>> 8fb63ffd1462797add00fb4277c7d0fbd64e17f9
