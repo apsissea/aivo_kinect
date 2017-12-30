@@ -16,10 +16,10 @@ function params = detectCameraParams(images,imageFileNames,InitialIntrinsicMatri
         );
 
     % Visualize the calibration accuracy.
-    showReprojectionErrors(params);
+    %showReprojectionErrors(params);
 
     % Visualize camera extrinsics.
     figure;
     showExtrinsics(params);
-    drawnow;
+    %drawnow;
 end
