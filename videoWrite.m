@@ -10,7 +10,7 @@ if numel(size(sequence))<4
     sequence = tmp;
 end
 
-videoFWriter = vision.VideoFileWriter([name,'.mp4'],'FileFormat','MPEG4','FrameRate',30);
+videoFWriter = vision.VideoFileWriter([name,'.mj2'],'FileFormat','MJ2000','FrameRate',30);
 for i=1:size(sequence,4)
     videoFrame = sequence(:,:,:,i);
     step(videoFWriter,videoFrame);
