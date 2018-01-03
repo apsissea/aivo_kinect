@@ -7,7 +7,7 @@ if exist('video','var') == 0
 end
 
 %% 
-if exist('video.mp4') ~= 2
+if exist('video.mj2') ~= 2
     videoWrite(mask,'video');
 end
 
@@ -19,7 +19,7 @@ background = imread('fond.png');
 background = imbinarize(skinColorBinarise(background));
 
 %% Binarization par cutting graph RGB
-h = waitbar(0,'1','Name','Binarization de la séquence');
+h = waitbar(0,'1','Name','Binarization de la sï¿½quence');
 
 se = strel('square',5);
 for im = 2:size(video,4)
@@ -33,7 +33,7 @@ end
 close(h);
 implay(mask*256,30);
 
-if exist('skinMask.mp4') ~= 2
+if exist('skinMask.mj2') ~= 2
     videoWrite(mask,'mask');
 end
 
@@ -48,6 +48,6 @@ close(h);
 
 implay(maskedImage,30);
 
-if exist('skinMask.mp4') ~= 2
+if exist('skinMask.mj2') ~= 2
     videoWrite(maskedImage,'skinMask');
 end
