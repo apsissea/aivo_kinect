@@ -8,7 +8,7 @@ end
 
 %% 
 if exist('video.mj2') ~= 2
-    videoWrite(mask,'video');
+    videoWrite(video,'video');
 end
 
 %%

@@ -11,7 +11,7 @@ param.segmentationThreshold = 0.05;
 %%
 NumTrainingFrames = 10;
 
-utilities.videoReader = vision.VideoFileReader('video.mp4');
+utilities.videoReader = vision.VideoFileReader('video.mj2');
 utilities.videoPlayer = vision.VideoPlayer('Position', [890,600,800,600]);
 utilities.foregroundDetector = vision.ForegroundDetector('NumTrainingFrames', 10, 'InitialVariance','Auto');
 utilities.blobAnalyzer = vision.BlobAnalysis('AreaOutputPort', false, 'MinimumBlobArea', 70, 'CentroidOutputPort', true);
@@ -20,7 +20,7 @@ utilities.accumulatedDetections = zeros(0, 2);
 utilities.accumulatedTrackings  = zeros(0, 2);
 
 %%
-foreground = vision.VideoFileReader('mask.mp4');
+foreground = vision.VideoFileReader('mask.mj2');
 
 %%
 for i = 1:NumTrainingFrames
