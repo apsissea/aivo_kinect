@@ -20,12 +20,12 @@ utilities.accumulatedDetections = zeros(0, 2);
 utilities.accumulatedTrackings  = zeros(0, 2);
 
 %%
-foreground = vision.VideoFileReader('mask.mj2');
+foreground = VideoReader('mask.mj2');
 
 %%
 for i = 1:NumTrainingFrames
     objectFrame = step(utilities.videoReader);
-    objectMask  = step(foreground);
+    objectMask  = readFrame(foreground);
 end
 
 %%
@@ -45,7 +45,7 @@ initialize(tracker,points.Location,objectFrame);
 %%
 while ~isDone(utilities.videoReader)
     frame = step(utilities.videoReader);
-    objectMask  = step(foreground);
+    objectMask  = readFrame(foreground);
     [points, validity] = step(tracker,frame);
     out = insertMarker(frame,points(validity, :),'+');
     step(utilities.videoPlayer,out);
