@@ -1,3 +1,4 @@
+clear, clc, close all;
 %% Chargement de la base de données images
 
 imagesCol = imageSet('images/Color');
@@ -19,30 +20,32 @@ paramIr  = detectCameraParams(imagesIr ,imageFileNamesIr ,InitialIntrinsicMatrix
 imNumber = 24;
 imColor = imagesCol.read(34);
 imInfrd = imagesIr.read(24);
+% Correction des distortions
 [imColorUW, imColorCenter] = undistortImage(imColor,paramCol,'cubic');
 [imInfrdUW, imInfrdCenter] = undistortImage(imInfrd,paramIr ,'cubic');
 
-% pour test
-%imInfrdUW = undistortImage(imagesCol.read(24),paramCol,'cubic');
-
-quadSubPlot(imColor,imColorUW,imInfrd,imInfrdUW);
-
-%%
+% Recherche de points d'interets
 matchedPoints1 = detectCheckerboardPoints(imColorUW);
 matchedPoints2 = detectCheckerboardPoints(imInfrdUW);
 
+% Definition des matrices camera
 [E,inliers] = estimateEssentialMatrix(matchedPoints1,matchedPoints2,paramCol);
+F = estimateFundamentalMatrix(matchedPoints1,matchedPoints2);
 
+% Definition des points de correspondance
 inlierPoints1 = matchedPoints1(inliers,:);
 inlierPoints2 = matchedPoints2(inliers,:);
 
-figure;
+figure(1);
+quadSubPlot(imColor,imColorUW,imInfrd,imInfrdUW);
+figure(2);
 showMatchedFeatures(imColorUW,imInfrdUW,matchedPoints1,matchedPoints2,'montage','PlotOptions',{'ro','go','y--'});
 
-%%
-tform = projective2d(inv(E));
+%% 
+tform = fitgeotrans(inlierPoints1,inlierPoints2,'projective');
 test = imwarp(imColorUW,tform);
-imagesc(test), axis image;
+imshowpair(test,imInfrdUW), axis image;
 
-%%
-%[relativeOrientation,relativeLocation] = relativeCameraPose(E,paramCol,paramCol,inlierPoints1,inlierPoints2);
+
+
+
