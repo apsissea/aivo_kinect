@@ -1,9 +1,26 @@
 function [handImage] = extractHand(in_image)
 
-in_image(1:400, :) = 0; % The upper part of the image is the head. We do not nead it.
-in_image = imopen(in_image, strel('octagon', 6));
-in_image = imopen(in_image, strel('line', 10, 90)); 
+height = size(in_image, 1);
+width = size(in_image, 2);
+head_part = 0.4 * height;
+hand_size_ratio = 4000 / (1920*1080);       % Min hand size
+joinded_hand_ratio = 15000 / (1920*1080);   % Max joined hands size
+min_region_size = hand_size_ratio * width * height;
+max_region_size = joinded_hand_ratio * width * height;
 
+% For smaller images we can't use such big kernels - Could be improved
+octagon_kernel_radius = 6;
+line_kernel_length = 10;
+if (height < 540 | width < 960)
+    octagon_kernel_radius = 3;
+    line_kernel_length = 5;
+end
+
+in_image(1:head_part, :) = 0; % The upper part of the image is the head. We do not nead it.
+in_image = imopen(in_image, strel('octagon', octagon_kernel_radius));
+in_image = imopen(in_image, strel('line', line_kernel_length, 90)); 
+
+% Label the input image
 [labeledImage, n] = bwlabel(in_image, 8);
 
 if n < 1
@@ -11,8 +28,9 @@ if n < 1
    return;
 end
 
+
 counts = sum(bsxfun(@eq, labeledImage(:), 1:n));    % Number of pixels for each region
-cond = counts > 3000 & counts < 15000;
+cond = counts > min_region_size & counts < max_region_size; % We only keep regions above these sizes
 
 if ~cond
    handImage = zeros(size(in_image));
