@@ -1,4 +1,4 @@
-function [handImage] = extractHand(in_image)
+function [handImage, nbHands, barys] = extractHand(in_image)
 
 height = size(in_image, 1);
 width = size(in_image, 2);
@@ -28,7 +28,6 @@ if n < 1
    return;
 end
 
-
 counts = sum(bsxfun(@eq, labeledImage(:), 1:n));    % Number of pixels for each region
 cond = counts > min_region_size & counts < max_region_size; % We only keep regions above these sizes
 
@@ -39,16 +38,28 @@ end
 
 areas = bsxfun(@eq, labeledImage, permute(find(cond), [1 3 2]));    % areas(:,:,1) the first hand, areas(:,:,2) the second one
 handImage = sum(areas, 3) > 0;   % We only keep regions corresponding to the hands
+nbHands = size(areas, 3);
 
-if size(areas, 3) >= 1
-        % Debug
-        rgbHands = zeros(size(in_image, 1), size(in_image, 2), 3);
-        rgbHands(:, :, 1) = areas(:, :, 1);
-        
-        if size(areas, 3) > 1
-            rgbHands(:, :, 3) = areas(:, :, 2);
-        end
-        
-        rgbHands(rgbHands > 0) = 255;
-        figure('Name', 'Both hands'); imshow(rgbHands);
+barys = zeros(3, 2);
+
+if nbHands >= 1
+    b1 = regionprops(areas(:, :, 1), 'centroid');
+    if nbHands == 2
+        b2 = regionprops(areas(:, :, 2), 'centroid');
+    end
 end
+
+barys = [b1.Centroid, 0; b2.Centroid, 0];
+
+% if nbHands >= 1
+%         % Debug
+%         rgbHands = zeros(size(in_image, 1), size(in_image, 2), 3);
+%         rgbHands(:, :, 1) = areas(:, :, 1);
+%         
+%         if n > 1
+%             rgbHands(:, :, 3) = areas(:, :, 2);
+%         end
+%         
+%         rgbHands(rgbHands > 0) = 255;
+%         figure('Name', 'Both hands'); imshow(rgbHands);
+% end
