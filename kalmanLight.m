@@ -1,12 +1,5 @@
 %%
 clc, close all;
-%%
-param.motionModel           = 'ConstantAcceleration';
-param.initialLocation       = 'Same as first detection';
-param.initialEstimateError  = 1E5 * ones(1, 3);
-param.motionNoise           = [25, 10, 1];
-param.measurementNoise      = 25;
-param.segmentationThreshold = 0.05;
 
 %%
 NumTrainingFrames = 10;
@@ -14,10 +7,6 @@ NumTrainingFrames = 10;
 utilities.videoReader = vision.VideoFileReader('video.mj2');
 utilities.videoPlayer = vision.VideoPlayer('Position', [890,600,800,600]);
 utilities.foregroundDetector = vision.ForegroundDetector('NumTrainingFrames', 10, 'InitialVariance','Auto');
-utilities.blobAnalyzer = vision.BlobAnalysis('AreaOutputPort', false, 'MinimumBlobArea', 70, 'CentroidOutputPort', true);
-utilities.accumulatedImage      = 0;
-utilities.accumulatedDetections = zeros(0, 2);
-utilities.accumulatedTrackings  = zeros(0, 2);
 
 %%
 foreground = VideoReader('mask.mj2');
@@ -29,32 +18,31 @@ for i = 1:NumTrainingFrames
 end
 
 %%
-objectMask2 = extractHand(objectMask(:,:,1));
-points = detectFASTFeatures(rgb2gray(objectFrame).*objectMask2);
-pointImage = insertMarker(objectFrame,points.Location,'+','Color','white');
-imagesc(pointImage), axis image;
-
-%%
 tracker = vision.PointTracker('NumPyramidLevels',1);
-initialize(tracker,points.Location,objectFrame);
 
 % figure;
 % imshow(pointImage);
 % title('Detected interest points');
 
 %%
+results = [];
+k = 1;
+ % load the images
+ images    = cell(500,1);
 while ~isDone(utilities.videoReader)
     frame = step(utilities.videoReader);
     objectMask  = readFrame(foreground);
-    [points, validity] = step(tracker,frame);
-    out = insertMarker(frame,points(validity, :),'+');
-    step(utilities.videoPlayer,out);
+    [handImage, nbHands, barys] = extractHand(objectMask(:,:,1));
+    results(k,:,:) = kalmanHandTracking(barys,nbHands);
+    RGB = insertShape(uint8(handImage),'circle',[results(:,1,1),results(:,1,2),results(:,1,3)],'LineWidth',5);
+    RGB = insertShape(RGB,'circle',[results(:,2,1),results(:,2,2),results(:,2,3)],'LineWidth',3);
+    images{k} = RGB;
+    k = k + 1;
 end
+results(results<0)=0;
+results(results>840)=0;
 
-%%
-
-utilities.videoReader.release;
-foreground.release;
-
-utilities.videoPlayer.delete;
-foreground.delete;
+figure;
+plot3(results(:,1,1),results(:,1,2),results(:,1,3))
+hold on
+plot3(results(:,2,1),results(:,2,2),results(:,2,3))

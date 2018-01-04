@@ -24,8 +24,12 @@ in_image = imopen(in_image, strel('line', line_kernel_length, 90));
 [labeledImage, n] = bwlabel(in_image, 8);
 
 if n < 1
-   disp('Not enough regions were found');
-   return;
+   %disp('Not enough regions were found');
+   %return;
+   handImage = zeros(size(in_image));
+   nbHands = 0;
+   barys = [0 0 0;0 0 0];
+   return
 end
 
 counts = sum(bsxfun(@eq, labeledImage(:), 1:n));    % Number of pixels for each region
@@ -33,7 +37,9 @@ cond = counts > min_region_size & counts < max_region_size; % We only keep regio
 
 if ~cond
    handImage = zeros(size(in_image));
-   return;
+   nbHands = 0;
+   barys = [0 0 0;0 0 0];
+   return
 end
 
 areas = bsxfun(@eq, labeledImage, permute(find(cond), [1 3 2]));    % areas(:,:,1) the first hand, areas(:,:,2) the second one
