@@ -1,22 +1,25 @@
 function [handPositions] = kalmanHandTracking(detectedPositions, count)
     persistent hand1est hand2est hand1p hand2p;
     if isempty(hand1est)
-        hand1est = zeros(6, 1);
-        hand2est = zeros(6, 1);
-        hand1p = zeros(6, 6);
-        hand2p = zeros(6, 6);
+        hand1est = zeros(9, 1);
+        hand2est = zeros(9, 1);
+        hand1p = zeros(9, 9);
+        hand2p = zeros(9, 9);
     end
     %Apply a kalman filter for each coordinate x,y,z
-    % x y z Vx Vy Vz
+    % x y z Vx Vy Vz Ax Ay Az
     dt = 1;
-    A=[ 1 0 0 dt 0 0;
-        0 1 0 0 dt 0;
-        0 0 1 0 0 dt;
-        0 0 0 1 0 0;
-        0 0 0 0 1 0;
-        0 0 0 0 0 1];
-    H = [ 1 0 0 0 0 0; 0 1 0 0 0 0; 0 0 1 0 0 0 ];    % Initialize measurement matrix
-    Q = eye(6);
+    A=[ 1 0 0 dt 0 0 0 0 0;
+        0 1 0 0 dt 0 0 0 0;
+        0 0 1 0 0 dt 0 0 0;
+        0 0 0 1 0 0 dt 0 0;
+        0 0 0 0 1 0 0 dt 0;
+        0 0 0 0 0 1 0 0 dt;
+        0 0 0 0 0 0 1 0 0;
+        0 0 0 0 0 0 0 1 0;
+        0 0 0 0 0 0 0 0 1];
+    H = [ 1 0 0 0 0 0 0 0 0; 0 1 0 0 0 0 0 0 0; 0 0 1 0 0 0 0 0 0 ];    % Initialize measurement matrix
+    Q = eye(9);
     R = 1000 * eye(3);
     % Predicted state and covariance
     hand1prd = A * hand1est;
