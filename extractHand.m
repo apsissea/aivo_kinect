@@ -46,10 +46,11 @@ if nbHands >= 1
     b1 = regionprops(areas(:, :, 1), 'centroid');
     if nbHands == 2
         b2 = regionprops(areas(:, :, 2), 'centroid');
+        barys = [b1.Centroid, 0; b2.Centroid, 0];
+    else
+        barys = [b1.Centroid, 0; 0, 0, 0];
     end
 end
-
-barys = [b1.Centroid, 0; b2.Centroid, 0];
 
 % if nbHands >= 1
 %         % Debug
