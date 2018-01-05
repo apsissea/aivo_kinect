@@ -16,7 +16,7 @@ if (height < 540 | width < 960)
     line_kernel_length = 5;
 end
 
-in_image(1:head_part, :) = 0; % The upper part of the image is the head. We do not nead it.
+in_image(1:uint16(head_part), width/2-width/4:width/2+width/4) = 0; % The upper part of the image is the head. We do not nead it.
 in_image = imopen(in_image, strel('octagon', octagon_kernel_radius));
 in_image = imopen(in_image, strel('line', line_kernel_length, 90)); 
 

@@ -15,6 +15,7 @@ foreground = VideoReader('mask.mj2');
 for i = 1:NumTrainingFrames
     objectFrame = step(utilities.videoReader);
     objectMask  = readFrame(foreground);
+    [handImage, nbHands, baseBarys] = extractHand(objectMask(:,:,1));
 end
 
 %%
