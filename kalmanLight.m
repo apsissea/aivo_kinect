@@ -39,10 +39,26 @@ while ~isDone(utilities.videoReader)
     images{k} = RGB;
     k = k + 1;
 end
-results(results<0)=0;
-results(results>840)=0;
+% results(results<0)=0;
+% results(results>840)=0;
 
 figure;
 plot3(results(:,1,1),results(:,1,2),results(:,1,3))
 hold on
 plot3(results(:,2,1),results(:,2,2),results(:,2,3))
+
+
+%%
+v = VideoReader('video.mj2');
+v.CurrentTime = (1/30)*10;
+
+figure;
+
+for i = 1:k
+    finalCut = insertMarker(v.readFrame,[results(:,1,1),results(:,1,2)],'color','red','size',3);
+    finalCut = insertMarker(finalCut   ,[results(:,2,1),results(:,2,2)],'color','red','size',3);
+    finalCut = insertMarker(finalCut   ,[results(i,1,1),results(i,1,2)],'s','color','green','size',10);
+    finalCut = insertMarker(finalCut   ,[results(i,2,1),results(i,2,2)],'s','color','blue','size',10);
+    imagesc(finalCut), axis image;
+    pause(1/30);
+end
