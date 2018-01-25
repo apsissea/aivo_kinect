@@ -8,7 +8,7 @@ end
 
 %% 
 if exist('video.mj2') ~= 2
-    videoWrite(video,'video');
+    videoWrite(video,'video','mj2');
 end
 
 %%
@@ -34,7 +34,7 @@ close(h);
 implay(mask*255,30);
 
 if exist('mask.mj2') ~= 2
-    videoWrite(mask,'mask');
+    videoWrite(mask,'mask','mj2');
 end
 
 %%
@@ -49,5 +49,5 @@ close(h);
 implay(maskedImage,30);
 
 if exist('skinMask.mj2') ~= 2
-    videoWrite(maskedImage,'skinMask');
+    videoWrite(maskedImage,'skinMask','mj2');
 end

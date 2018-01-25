@@ -1,4 +1,4 @@
-function [] = videoWrite(sequence,name)
+function [] = videoWrite(sequence,name,format)
 %% Permet d'écrire une vidéo à partir d'une variable 3 ou 4-D
 if numel(size(sequence))<4
     disp('zut')
@@ -10,7 +10,18 @@ if numel(size(sequence))<4
     sequence = tmp;
 end
 
-videoFWriter = vision.VideoFileWriter([name,'.mj2'],'FileFormat','MJ2000','FrameRate',30);
+if format == 'mj2'
+    ext = '.mj2';
+    encoding = 'MJ2000';
+elseif format == 'avi'
+    ext = '.avi';
+    encoding = 'AVI';
+else
+    ext = '.mp4';
+    encoding = 'MPEG4';
+end
+    
+videoFWriter = vision.VideoFileWriter([name,ext],'FileFormat',encoding,'FrameRate',30);
 for i=1:size(sequence,4)
     videoFrame = sequence(:,:,:,i);
     step(videoFWriter,videoFrame);
