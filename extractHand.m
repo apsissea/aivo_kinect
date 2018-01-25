@@ -1,4 +1,4 @@
-function [handImage, nbHands, barys] = extractHand(in_image)
+function [handImage, nbHands, barys] = extractHand(in_image, index, depth_image)
 
 height = size(in_image, 1);
 width = size(in_image, 2);
@@ -16,7 +16,7 @@ if (height < 540 | width < 960)
     line_kernel_length = 5;
 end
 
-in_image(1:uint16(head_part), width/2-width/4:width/2+width/4) = 0; % The upper part of the image is the head. We do not nead it.
+in_image(1:360,910:1170) = 0; % The upper part of the image is the head. We do not nead it.
 in_image = imopen(in_image, strel('octagon', octagon_kernel_radius));
 in_image = imopen(in_image, strel('line', line_kernel_length, 90)); 
 
@@ -56,6 +56,14 @@ if nbHands >= 1
     else
         barys = [b1.Centroid, 0; 0, 0, 0];
     end
+end
+
+if barys(1, 1) ~= 0 && barys(1, 2) ~= 0
+    barys(1, 3) = depth_image{1}(ceil(barys(1, 2)), ceil(barys(1, 1)));
+end
+
+if barys(2, 1) ~= 0 && barys(2, 2) ~= 0
+    barys(2, 3) = depth_image{1}(ceil(barys(2, 2)), ceil(barys(2, 1)));
 end
 
 % if nbHands >= 1
