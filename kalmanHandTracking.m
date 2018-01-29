@@ -35,9 +35,9 @@ function [handPositions] = kalmanHandTracking(detectedPositions, count, defaultP
     klm_gain2 = (S2 \ B2)';
     % Estimated state and covariance
     position = detectedPositions(1,:);
-    tmp = hand1prd + klm_gain1 * (detectedPositions(1,:) - H * hand1prd);
+    tmp = hand1prd + klm_gain1 * (position - H * hand1prd);
     D1 = sqrt(sum((tmp - position) .^ 2));
-    tmp = hand2prd + klm_gain2 * (detectedPositions(1,:) - H * hand2prd);
+    tmp = hand2prd + klm_gain2 * (position - H * hand2prd);
     D2 = sqrt(sum((tmp - position) .^ 2));
     if count == 2
         if D1 < D2
