@@ -1,4 +1,4 @@
-function [Color] = suppressBackground(datas,maxDepth)
+function [Color] = suppressBackground(datas, maxDepth)
 
 sis = size(datas.remapImage{1});
 Color = zeros(sis(1),sis(2),sis(3),length(datas.remapImage),'uint8');
