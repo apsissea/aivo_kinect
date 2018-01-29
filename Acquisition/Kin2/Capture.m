@@ -2,7 +2,7 @@
 clear, clc, close all;
 
 %% Create device
-k2 = Kin2('color','depth','infrared','body','body_index');
+k2 = Kin2('color','depth','infrared','body','body_index','face');
 
 % images sizes
 parameters.d_width = 512;
@@ -20,11 +20,18 @@ datas.remapImage = []; %zeros(d_height,d_width,'uint8');
 datas.mask       = [];
 
 %%
-h = figure;
+c.h = figure;
+c.ax = axes;
+c.im = imshow(zeros(parameters.d_height,parameters.d_width,3,'uint8'),[]);
+set(gcf,'keypress','q=get(gcf,''currentchar'');'); % listen keypress
 
+%%
+q = [];
 k=1;
+startRecording = 0;
+
 while true
-    if ishandle(h)
+    if ishandle(c.h)
         validData = k2.updateData;
         if validData
             datas.depth{k} = k2.getDepth;
@@ -35,19 +42,26 @@ while true
             % Display
             isTracked = k2.getBodies('Quat');
             numBodies = size(isTracked,2);
+            % faces = k2.getFaces;
             if numBodies > 0
                 bodies{k} = isTracked;
                 bodyIndex = k2.getBodyIndex;
                 datas.mask{k} = bodyIdMask(bodyIndex);
                 pos2D = k2.mapCameraPoints2Depth(isTracked(1).Position');
-                imshow(insertMarker(datas.remapImage{k}.*datas.mask{k},pos2D));
-                %imagesc(mask);
+                imshow(insertMarker(datas.remapImage{k}.*datas.mask{k},pos2D)), c.ax;
+                startRecording = 1;
             else
-                imshow(datas.remapImage{k}), axis image;
+                imshow(datas.remapImage{k}), c.ax;
             end
-
-            pause(1/30); % Because kinect framerate is 30ips 
-            k = k+1;
+            if startRecording == 1
+                k = k+1;
+            end
+        end
+        % If user presses 'q', exit loop
+        if ~isempty(q)
+            if strcmp(q,'q')
+                break;
+            end
         end
     else
         break;
