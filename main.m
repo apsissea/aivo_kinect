@@ -1,5 +1,6 @@
 %%
-clearvars -except datas , clc, close all;
+clearvars -except datas;
+clc, close all;
 
 %%
 if exist('datas','var') == 0
@@ -10,22 +11,27 @@ end
 
 %%
 color = suppressBackground(datas,1000);
-close;
 %%
 figure(1);
+figPos = get(gcf,'position');
 
 %%
 handPositions = [];
 handImage = [];
+w = waitbar(1,'1','Name','Tracking ...');
+barPos = get(w,'position');
+set(w,'position',[barPos(1) (barPos(2)-(barPos(4))) barPos(3) barPos(4)]);
 hold on;
 
+%%
 for i = 1:size(color,4)
     mask = skinColorBinarise(color(:, :, :, i));
     [handImage, nbHands, barys] = extractHand(mask, datas.depth{i});
     handPositions = kalmanHandTracking(barys, nbHands, barys);
-    rgb = insertMarker(color(:,:,:,i),[round(barys(:,1)), round(barys(:,2))]);% on change x,y en ligne colone?
-    rgb = insertMarker(uint8(handImage*255),[round(barys(:,1)), round(barys(:,2))]);
+    rgb = insertMarker(color(:,:,:,i)+uint8(handImage*128),[round(barys(:,1)), round(barys(:,2))],...
+       'x','color','green','size',20); % on change x,y en ligne colone?
     figure1 = imshow(rgb);
+    waitbar(i/size(color,4), w, sprintf('pencent done: %-5.1f%%',((i/size(color,4))*100)));
     pause(1/30);
 end
-
+delete(w);
