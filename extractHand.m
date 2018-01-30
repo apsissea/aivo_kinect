@@ -22,7 +22,7 @@ in_image = imopen(in_image, strel('line', line_kernel_length, 90));
 
 % Label the input image
 [labeledImage, n] = bwlabel(in_image, 8);
-
+imagesc(labeledImage);% Pour test
 if n < 1
    handImage = zeros(size(in_image));
    nbHands = 0;

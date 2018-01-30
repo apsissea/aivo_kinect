@@ -74,6 +74,7 @@ pause(2);
 k2.delete;
 
 %% View again
+choice = [];
 for i = 1:size(datas.color,2)
     if any(datas.mask{i}(:))
         imshow(datas.remapImage{i}.*datas.mask{i});
@@ -83,6 +84,11 @@ for i = 1:size(datas.color,2)
         pause(1/30);
     end
 end
+choice = choosedialog;
+if choice == 1
+    save('rawDatas.mat','bodies','datas');
+    disp('Capture saved !');
+end
 close all;
 
 %% Fonctions
@@ -90,4 +96,20 @@ function mask=bodyIdMask(bodyIndex)
     mask = 1-imbinarize(bodyIndex);
     mask = uint8(mask);
     mask = repmat(mask,[1,1,3]);
+end
+
+function choice = choosedialog
+    d = dialog('Position',[300 300 250 150],'Name','Select One');
+    txt = uicontrol('Parent',d,'Style','text','Position',[20 80 210 40],'String','Select a color');
+    btn1 = uicontrol('Parent',d,'Position',[75 70 100 25],'String','Save','Callback',@popup_callback);
+    btn2 = uicontrol('Parent',d,'Position',[89 20 70 25],'String','Cancel','Callback','delete(gcf)');
+    choice = 0;
+       
+    % Wait for d to close before running to completion
+    uiwait(d);
+   
+       function popup_callback(popup,event)
+          choice = 1;
+          delete(gcf);
+       end
 end
