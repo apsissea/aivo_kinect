@@ -24,10 +24,13 @@ set(w,'position',[barPos(1) (barPos(2)-(barPos(4))) barPos(3) barPos(4)]);
 hold on;
 
 %%
-for i = 1:size(color,4)
+bbox = faceDetector(datas);
+
+for i = 2:size(color,4)
     mask = skinColorBinarise(color(:, :, :, i));
-    [handImage, nbHands, barys] = extractHand(mask, datas.depth{i});
-    handPositions = kalmanHandTracking(barys, nbHands, barys);
+
+    [handImage, nbHands, barys] = extractHand(mask, datas.depth{i}, bbox{i});
+    handPositions = kalmanHandTracking(transpose(barys), nbHands, barys);
     rgb = insertMarker(color(:,:,:,i)+uint8(handImage*128),[round(barys(:,1)), round(barys(:,2))],...
        'x','color','green','size',20); % on change x,y en ligne colone?
     figure1 = imshow(rgb);

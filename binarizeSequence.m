@@ -2,13 +2,13 @@
 %%
 if exist('video','var') == 0
     fprintf('Loading video ...')
-    load('rawDatas.mat')
+    load('capture_gestes_20171208_2.mat')
     fprintf(' done !\n')
 end
 
 %% 
 if exist('video.mj2') ~= 2
-    videoWrite(datas.remapImage,'video2','mj2');
+    videoWrite(video,'video','mj2');
 end
 
 %%
