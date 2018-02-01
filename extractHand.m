@@ -44,7 +44,7 @@ areas = bsxfun(@eq, labeledImage, permute(find(cond), [1 3 2]));    % areas(:,:,
 handImage = sum(areas, 3) > 0;   % We only keep regions corresponding to the hands
 nbHands = size(areas, 3);
 
-barys = zeros(3, 2);
+barys = [0 0 0;0 0 0];
 
 if nbHands >= 1
     b1 = regionprops(areas(:, :, 1), 'centroid');
