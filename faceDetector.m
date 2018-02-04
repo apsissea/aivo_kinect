@@ -1,6 +1,12 @@
 function [bboxes] = faceDetector(datas)
 %FACEDETECTOR Summary of this function goes here
 %   Detailed explanation goes here
+<<<<<<< HEAD
+=======
+bboxes = step(faceDetector, in_image);
+
+delta = 50;
+>>>>>>> dynamic annalyse of l'histogram
 
 faceDetector = vision.CascadeObjectDetector('FrontalFaceCART');
 %faceDetector = vision.CascadeObjectDetector('FrontalFaceLBP');
@@ -21,7 +27,12 @@ for i = 1:numel(datas.remapImage)
     %pause(1/30);
 end
 
+<<<<<<< HEAD
 hold off;
 close(h) ;
 end
+=======
+bboxes = bboxes(1,:);
+old_bbox = bboxes;
+>>>>>>> dynamic annalyse of l'histogram
 
