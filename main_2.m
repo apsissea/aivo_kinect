@@ -40,7 +40,7 @@ for i = frameOffset:seqLen-frameOffset
     old_bbox = bbox;
 
     [handImage,nbHands,barys] = extractHand_2(mask, datas.depth{i}, bbox);
-    handPositions{i} = kalmanHandTracking(transpose(barys), nbHands, barys);
+    handPositions = kalmanHandTracking(barys, nbHands, barys);
      
     % Sortie
     halphablend = vision.AlphaBlender('Operation', 'Binary mask', 'MaskSource', 'Input port');
@@ -50,7 +50,7 @@ for i = frameOffset:seqLen-frameOffset
     if nbHands == 2
         rgb = insertShape(rgb,'circle',[round(barys(2,1)),round(barys(2,2)),35],'LineWidth',5,'Color','blue');
     end
-    rgb = insertMarker(rgb,[round(barys(:,1)), round(barys(:,2))],'o','color','green','size',20); % on change x,y en ligne colone?
+    rgb = insertMarker(rgb,[round(handPositions(:,1)), round(handPositions(:,2))],'o','color','green','size',20); % on change x,y en ligne colone?
     h = imshow(rgb);
     waitbar(i/seqLen, w, sprintf('Frame %d on %d',i,seqLen));
 end
