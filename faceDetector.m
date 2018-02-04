@@ -1,27 +1,21 @@
-function [bboxes] = faceDetector(datas)
+function [bboxes,old_bbox] = faceDetector(in_image,old_bbox,faceDetector)
 %FACEDETECTOR Summary of this function goes here
 %   Detailed explanation goes here
+bboxes = step(faceDetector, in_image);
 
-faceDetector = vision.CascadeObjectDetector('FrontalFaceCART');
-%faceDetector = vision.CascadeObjectDetector('FrontalFaceLBP');
-%faceDetector = vision.CascadeObjectDetector('UpperBody');
+delta = 50;
 
-h = figure(1);
-hold on;
+if isempty(bboxes)
+    bboxes = old_bbox;
+end
 
-for i = 1:numel(datas.remapImage)
-    I = datas.remapImage{i};
-    bboxes{i} = step(faceDetector, I);
-    if isempty(bboxes{i}) && i>2
-        bboxes{i} = bboxes{i-1};
+if old_bbox ~= [1 1 1 1]
+    if bboxes(1) < old_bbox(1)-delta || bboxes(1) > old_bbox(1)+delta
+        bboxes = old_bbox;
     end
-
-    %IFaces = insertObjectAnnotation(I, 'rectangle', bboxes{i}, 'Face');
-    %imshow(IFaces), title('Detected faces');
-    %pause(1/30);
 end
 
-hold off;
-close(h) ;
-end
+bboxes = bboxes(1,:);
+old_bbox = bboxes;
 
+end

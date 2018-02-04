@@ -15,9 +15,9 @@ function [handPositions] = kalmanHandTracking(detectedPositions, count, defaultP
         0 0 0 1 0 0 dt 0 0;
         0 0 0 0 1 0 0 dt 0;
         0 0 0 0 0 1 0 0 dt;
-        0 0 0 0 0 0 1 0 0;
-        0 0 0 0 0 0 0 1 0;
-        0 0 0 0 0 0 0 0 1];
+        0 0 0 0 0 0 0.75 0 0;
+        0 0 0 0 0 0 0 0.75 0;
+        0 0 0 0 0 0 0 0 0.75];
     H = [ 1 0 0 0 0 0 0 0 0; 0 1 0 0 0 0 0 0 0; 0 0 1 0 0 0 0 0 0 ];    % Initialize measurement matrix
     Q = eye(9);
     R = 1000 * eye(3);
