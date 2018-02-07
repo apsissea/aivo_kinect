@@ -35,28 +35,16 @@ function [handPositions] = kalmanHandTracking(detectedPositions, count, defaultP
     klm_gain2 = (S2 \ B2)';
     % Estimated state and covariance
     position = detectedPositions(1,:);
-    tmp = hand1prd + klm_gain1 * (position - H * hand1prd);
-    D1 = sqrt(sum((tmp - position) .^ 2));
-    tmp = hand2prd + klm_gain2 * (position - H * hand2prd);
-    D2 = sqrt(sum((tmp - position) .^ 2));
+    tmp = H * (hand1prd + klm_gain1 * (position - H * hand1prd));
+    D1 = sqrt(sum((tmp(1,:) - position) .^ 2));
+    tmp = H * (hand2prd + klm_gain2 * (position - H * hand2prd));
+    D2 = sqrt(sum((tmp(1,:) - position) .^ 2));
     if count == 2
-        position2 = detectedPositions(2,:);
-        tmp = hand1prd + klm_gain1 * (position2 - H * hand1prd);
-        D3 = sqrt(sum((tmp - position) .^ 2));
-        tmp = hand2prd + klm_gain2 * (position2 - H * hand2prd);
-        D4 = sqrt(sum((tmp - position) .^ 2));
-        if D3 < D4
-            if D1 < D2
-                hand1est = hand1prd + klm_gain1 * (detectedPositions(1,:) - H * hand1prd);
-                hand1p = hand1pprd - klm_gain1 * H * hand1pprd;
-                hand2est = hand2prd + klm_gain2 * (detectedPositions(2,:) - H * hand2prd);
-                hand2p = hand2pprd - klm_gain2 * H * hand2pprd;
-            else
-                hand1est = hand1prd + klm_gain1 * (detectedPositions(2,:) - H * hand1prd);
-                hand1p = hand1pprd - klm_gain1 * H * hand1pprd;
-                hand2est = hand2prd + klm_gain2 * (detectedPositions(1,:) - H * hand2prd);
-                hand2p = hand2pprd - klm_gain2 * H * hand2pprd;
-            end
+        if D1 < D2
+            hand1est = hand1prd + klm_gain1 * (detectedPositions(1,:) - H * hand1prd);
+            hand1p = hand1pprd - klm_gain1 * H * hand1pprd;
+            hand2est = hand2prd + klm_gain2 * (detectedPositions(2,:) - H * hand2prd);
+            hand2p = hand2pprd - klm_gain2 * H * hand2pprd;
         else
             hand1est = hand1prd + klm_gain1 * (detectedPositions(2,:) - H * hand1prd);
             hand1p = hand1pprd - klm_gain1 * H * hand1pprd;
