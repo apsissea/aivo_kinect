@@ -25,7 +25,7 @@ handImage = [];
 bbox = [];
 old_bbox = [1 1 1 1];
 faceDetectorOBJ = vision.CascadeObjectDetector('FrontalFaceCART');
-frameOffset = 30;
+frameOffset = 20;
 redImage = zeros(size(datas.remapImage{1}));
 redImage(:,:,1) = 255;
 redImage = uint8(redImage);
@@ -43,15 +43,17 @@ for i = frameOffset:seqLen-frameOffset
     handPositions = kalmanHandTracking(barys, nbHands, barys);
      
     % Sortie
-    halphablend = vision.AlphaBlender('Operation', 'Binary mask', 'MaskSource', 'Input port');
-    rgb = step(halphablend,frame,redImage,handImage);
-    rgb = insertObjectAnnotation(rgb,'rectangle',bbox,'Face');
-    rgb = insertShape(rgb,'circle',[round(barys(1,1)),round(barys(1,2)),35],'LineWidth',5,'Color','green');
-    if nbHands == 2
-        rgb = insertShape(rgb,'circle',[round(barys(2,1)),round(barys(2,2)),35],'LineWidth',5,'Color','blue');
-    end
-    rgb = insertMarker(rgb,[round(handPositions(:,1)), round(handPositions(:,2))],'o','color','green','size',20); % on change x,y en ligne colone?
-    h = imshow(rgb);
+%     halphablend = vision.AlphaBlender('Operation', 'Binary mask', 'MaskSource', 'Input port');
+%     rgb = step(halphablend,frame,redImage,handImage);
+%     rgb = insertObjectAnnotation(rgb,'rectangle',bbox,'Face');
+%     rgb = insertShape(rgb,'circle',[round(barys(1,1)),round(barys(1,2)),35],'LineWidth',5,'Color','green');
+%     if nbHands == 2
+%         rgb = insertShape(rgb,'circle',[round(barys(2,1)),round(barys(2,2)),35],'LineWidth',5,'Color','blue');
+%     end
+    rgb = frame;
+    rgb = insertShape(rgb,'circle',[round(handPositions(1,1)), round(handPositions(1,2)),20],'LineWidth',3,'Color','cyan');
+    rgb = insertShape(rgb,'circle',[round(handPositions(2,1)), round(handPositions(2,2)),20],'LineWidth',3,'Color','yellow');
+    h = imshow(imresize(rgb,2));
     waitbar(i/seqLen, w, sprintf('Frame %d on %d',i,seqLen));
 end
 delete(w);
